@@ -78,6 +78,49 @@ class Py3status:
         'version'
     ]
 
+    def _getPlayerInterface(self):
+        """
+        Get Spotify player dbus interface
+        retruns interface object
+        """
+        bus = dbus.SessionBus()
+        try:
+            mp_obj = bus.get_object('org.mpris.MediaPlayer2.spotify',
+                                    '/org/mpris/MediaPlayer2')
+            player_interf = dbus.Interface(mp_obj,
+                                           'org.mpris.MediaPlayer2.Player')
+        except Exception as e:
+            return None
+        return player_interf
+
+    def _togglePlayPause(self):
+        """
+        Toggle current playback status
+        """
+        player_interface = self._getPlayerInterface()
+        if player_interface:
+            print("Done getting Interface")
+            player_interface.PlayPause()
+
+    def _nextSong(self):
+        """
+        Skip current song and play the next
+        """
+        player_interface = self._getPlayerInterface()
+        if player_interface:
+            print("Done getting Interface")
+            player_interface.Next()
+
+    def on_click(self, event):
+        """
+        Process on click event
+        """
+        button = event['button']
+        if button == 1:
+            self._togglePlayPause()
+        if button == 3:
+            self._nextSong()
+
     def post_config_hook(self):
         """
         """
